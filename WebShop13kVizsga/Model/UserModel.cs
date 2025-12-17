@@ -24,6 +24,7 @@ namespace WebShop13kVizsga.Model
                 trx.Commit();
             }
         }
+
         public User? ValidateUser(string email, string password)
         {
             var hash = HashPassword(password);
@@ -38,6 +39,16 @@ namespace WebShop13kVizsga.Model
             var bytes = Encoding.UTF8.GetBytes(password);
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
+        }
+
+        public void ChangePassword(int userid, string newpassword)
+        {
+            var trx = _context.Database.BeginTransaction();
+            {
+                var user = _context.Users.Where(x => x.UserId == userid).First().Password = HashPassword(newpassword);
+                _context.SaveChanges();
+                trx.Commit();
+            }
         }
     }
 }
