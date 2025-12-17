@@ -1,6 +1,6 @@
 ﻿namespace WebShop13kVizsga.Dto
 {
-    public class ModifyItemDto
+    public class ModifyItemDto : ItemDto
     {
         public int Modif_CategoryId { get; set; }
 

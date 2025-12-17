@@ -12,7 +12,7 @@ namespace WebShop13kVizsga.Model
             _context = context;
         }
 
-        public void Registration(string username, string password, string role = "Worker")
+        public void WorkerRegistration(string username, string password, string role = "Worker")
         {
             if (_context.Workers.Any(x => x.Username == username))
             {
@@ -25,6 +25,21 @@ namespace WebShop13kVizsga.Model
                 trx.Commit();
             }
         }
+
+        public void AdminRegistration(string username, string password, string role = "Admin")
+        {
+            if (_context.Workers.Any(x => x.Username == username))
+            {
+                throw new InvalidOperationException("Admin already exists");
+            }
+            using var trx = _context.Database.BeginTransaction();
+            {
+                _context.Workers.Add(new Worker { Username = username, Password = HashPassword(password), Role = role });
+                _context.SaveChanges();
+                trx.Commit();
+            }
+        }
+
         public Worker? ValidateWorker(string username, string password)
         {
             var hash = HashPassword(password);
@@ -32,6 +47,12 @@ namespace WebShop13kVizsga.Model
             return worker.Where(x => x.Password == hash).FirstOrDefault();
         }
 
+        public Worker? ValidateAdmin(string username, string password)
+        {
+            var hash = HashPassword(password);
+            var admin = _context.Workers.Where(x=> x.Username == username);
+            return admin.Where(x=> x.Password == hash).FirstOrDefault();
+        }
 
         private string HashPassword(string password)
         {

@@ -47,6 +47,7 @@ namespace WebShop13kVizsga.Persistence
 
         [Required]
         public string Password { get; set; }
+
         public string Role { get; set; } = "Worker";
 
         public int Phone { get; set; }

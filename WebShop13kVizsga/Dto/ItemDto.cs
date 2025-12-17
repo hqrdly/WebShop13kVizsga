@@ -4,6 +4,7 @@ namespace WebShop13kVizsga.Dto
 {
     public class ItemDto
     {
+        public int itemId {  get; set; }
         public int categoryId { get; set; }
 
         public string itemName { get; set; }
