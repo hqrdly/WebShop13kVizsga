@@ -8,6 +8,7 @@ namespace WebShop13kVizsga.Persistence
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Worker> Workers { get; set; }
+        public DbSet<Category> Categories { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -29,6 +30,7 @@ namespace WebShop13kVizsga.Persistence
         public string Address { get; set; }
 
         public int Phone { get; set; }
+        public string Role { get; set; } = "User";
     }
 
     public class Worker
@@ -41,16 +43,22 @@ namespace WebShop13kVizsga.Persistence
         public bool IsWorker { get; set; }
 
         [Required]
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-
-        [Required]
         public string Username { get; set; }
 
         [Required]
         public string Password { get; set; }
+        public string Role { get; set; } = "Worker";
 
         public int Phone { get; set; }
+    }
+
+    public class Category
+    {
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int CategoryId { get; set; } 
+        public string CategoryName { get; set; }
+        public List<Item> Items { get; set; } = new();
     }
 
     public class Item
