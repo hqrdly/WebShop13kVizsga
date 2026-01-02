@@ -119,6 +119,20 @@ namespace WebShop13kVizsga.Persistence
 
         public string TargetAddress { get; set; }
 
+        public int TargetPhone { get; set; }
+
         public DateTimeOffset Date { get; set; }
+
+        public OrderStatus Status { get; set; } = OrderStatus.ItemQuantityOnHold;
+
+    }
+
+    public enum OrderStatus
+    {
+        ItemQuantityOnHold,
+        DataConfirmed,
+        PaymentPending,
+        PaymentSuccess,
+        OrderConfirmed
     }
 }
