@@ -51,7 +51,7 @@ namespace WebShop13kVizsga.Controllers
 
         #region NewOrder
         [Authorize(Roles = "User")]
-        [HttpPost("/orders")]
+        [HttpPost("/neworder")]
         public ActionResult NewOrder(
             [FromQuery] int cartId,
             [FromQuery] int userId,
@@ -77,7 +77,7 @@ namespace WebShop13kVizsga.Controllers
             }
             catch
             {
-                return BadRequest("Rendelés létrehozása nem sikerült.");
+                return BadRequest("Nem sikerult letrehozni a rendelest");
             }
         }
         #endregion

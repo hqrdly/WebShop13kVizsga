@@ -12,9 +12,15 @@ namespace WebShop13kVizsga.Model
             _context = context;
         }
 
-        public IEnumerable <CategoryDto> GetCategory()
+        public IEnumerable<CategoryDto> GetCategory()
         {
-            return _context.Categories.OrderBy(x => x.CategoryName).Select(x => new CategoryDto { categoryName = x.CategoryName});
+            return _context.Categories
+                .OrderBy(x => x.CategoryName)
+                .Select(x => new CategoryDto
+                {
+                    categoryName = x.CategoryName
+                })
+                .ToList();
         }
 
         public void CreateNewCategory(NewCategoryDto dto)
@@ -23,38 +29,57 @@ namespace WebShop13kVizsga.Model
             {
                 throw new InvalidOperationException("Ez a Category már létezik!");
             }
+
             using var trx = _context.Database.BeginTransaction();
+            try
             {
                 _context.Categories.Add(new Category
                 {
                     CategoryName = dto.Category_Name,
-                    Items = dto.Items,
+                    Items = dto.Items
                 });
                 _context.SaveChanges();
                 trx.Commit();
+            }
+            catch
+            {
+                trx.Rollback();
+                throw;
             }
         }
 
         public void ModifyCategory(int id, ModifyCategoryDto dto)
         {
             using var trx = _context.Database.BeginTransaction();
+            try
             {
-                _context.Categories.Where(x => x.CategoryId==dto.Category_Id).First().CategoryName=dto.Modif_CategoryName;
+                var category = _context.Categories.First(x => x.CategoryId == id);
+                category.CategoryName = dto.Modif_CategoryName;
                 _context.SaveChanges();
                 trx.Commit();
             }
-
+            catch
+            {
+                trx.Rollback();
+                throw;
+            }
         }
 
         public void DeleteCategory(int id)
         {
             using var trx = _context.Database.BeginTransaction();
+            try
             {
-                _context.Remove(_context.Categories.Where(x => x.CategoryId == id).First());
+                var category = _context.Categories.First(x => x.CategoryId == id);
+                _context.Categories.Remove(category);
                 _context.SaveChanges();
                 trx.Commit();
             }
+            catch
+            {
+                trx.Rollback();
+                throw;
+            }
         }
-
     }
 }

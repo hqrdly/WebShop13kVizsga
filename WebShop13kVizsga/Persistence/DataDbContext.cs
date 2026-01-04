@@ -39,9 +39,6 @@ namespace WebShop13kVizsga.Persistence
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int WorkerId { get; set; }
 
-        public bool IsAdmin { get; set; }
-        public bool IsWorker { get; set; }
-
         [Required]
         public string Username { get; set; }
 

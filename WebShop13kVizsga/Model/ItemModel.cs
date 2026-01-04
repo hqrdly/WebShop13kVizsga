@@ -13,31 +13,55 @@ namespace WebShop13kVizsga.Model
         }
 
         #region Items
-        public IEnumerable<Dto.ItemDto> GetItems()
+        public IEnumerable<ItemDto> GetItems()
         {
-            return _context.Items.OrderBy(x=> x.ItemName).Select(x=> new Dto.ItemDto { categoryId = x.ItemId, itemName = x.ItemName, price = x.Price, description = x.Description, quantity = x.Quantity });
+            return _context.Items
+                .OrderBy(x => x.ItemName)
+                .Select(x => new ItemDto
+                {
+                    categoryId = x.CategoryId,
+                    itemName = x.ItemName,
+                    price = x.Price,
+                    description = x.Description,
+                    quantity = x.Quantity
+                })
+                .ToList();
         }
         #endregion
 
         #region CategorySelectItems
-        public IEnumerable<Dto.ItemDto> CategorySelectItems(int id)
+        public IEnumerable<ItemDto> CategorySelectItems(int id)
         {
-            if (_context.Categories.Any(x => x.CategoryId != id))
+            if (!_context.Categories.Any(x => x.CategoryId == id))
             {
-                throw new InvalidOperationException("Nincs ilyen kategória");
+                throw new InvalidOperationException("Nincs ilyen kategoria");
             }
-            else
-            {
-                return _context.Items.Where(x => x.CategoryId == id).Select(x => new Dto.ItemDto { categoryId = x.ItemId, itemName = x.ItemName, price = x.Price, description = x.Description, quantity = x.Quantity });
-            }
+
+            return _context.Items
+                .Where(x => x.CategoryId == id)
+                .Select(x => new ItemDto
+                {
+                    categoryId = x.CategoryId,
+                    itemName = x.ItemName,
+                    price = x.Price,
+                    description = x.Description,
+                    quantity = x.Quantity
+                })
+                .ToList();
         }
         #endregion
 
         #region CreateNewItem
-        public void CreateNewItem(Dto.ItemDto itemDto)
+        public void CreateNewItem(ItemDto itemDto)
         {
-            int categoryId = _context.Categories.Where(x => x.CategoryId == itemDto.categoryId).First().CategoryId;
+            var category = _context.Categories
+                .FirstOrDefault(x => x.CategoryId == itemDto.categoryId);
+
+            if (category == null)
+                throw new InvalidOperationException("Nincs ilyen kategoria");
+
             using var trx = _context.Database.BeginTransaction();
+            try
             {
                 _context.Items.Add(new Item
                 {
@@ -45,8 +69,16 @@ namespace WebShop13kVizsga.Model
                     Price = itemDto.price,
                     Description = itemDto.description,
                     Quantity = itemDto.quantity,
-                    CategoryId = categoryId,
+                    CategoryId = category.CategoryId
                 });
+
+                _context.SaveChanges();
+                trx.Commit();
+            }
+            catch
+            {
+                trx.Rollback();
+                throw;
             }
         }
         #endregion
@@ -54,47 +86,61 @@ namespace WebShop13kVizsga.Model
         #region ModifyItem
         public void ModifyItem(int id, ModifyItemDto itemDto)
         {
-            if (_context.Items.Any(x => x.ItemId != id))
+            if (!_context.Items.Any(x => x.ItemId == id))
             {
                 throw new InvalidOperationException("Nem létező itemid");
             }
-            else
-            {
-                int categoryId = _context.Categories.Where(x => x.CategoryId == itemDto.Modif_CategoryId).First().CategoryId;
-                using var trx = _context.Database.BeginTransaction();
-                {
-                    _context.Items.Where(x=> x.ItemId == itemDto.itemId).First().ItemName = itemDto.itemName;
-                    _context.Items.Where(x => x.ItemId == itemDto.itemId).First().Description = itemDto.description;
-                    _context.Items.Where(x => x.ItemId == itemDto.itemId).First().Price = itemDto.price;
-                    _context.Items.Where(x => x.ItemId == itemDto.itemId).First().Quantity = itemDto.quantity;
-                    _context.Items.Where(x => x.ItemId == itemDto.itemId).First().CategoryId = categoryId;
-                   _context.SaveChanges();
-                    trx.Commit();
 
-                }
+            var category = _context.Categories
+                .FirstOrDefault(x => x.CategoryId == itemDto.Modif_CategoryId);
+
+            if (category == null)
+                throw new InvalidOperationException("Nincs ilyen kategória");
+
+            using var trx = _context.Database.BeginTransaction();
+            try
+            {
+                var item = _context.Items.First(x => x.ItemId == id);
+
+                item.ItemName = itemDto.itemName;
+                item.Description = itemDto.description;
+                item.Price = itemDto.price;
+                item.Quantity = itemDto.quantity;
+                item.CategoryId = category.CategoryId;
+
+                _context.SaveChanges();
+                trx.Commit();
             }
-            
+            catch
+            {
+                trx.Rollback();
+                throw;
+            }
         }
         #endregion
 
         #region DeleteItem
         public void DeleteItem(int id)
         {
-            if (_context.Items.Any(x => x.ItemId != id))
+            if (!_context.Items.Any(x => x.ItemId == id))
             {
                 throw new InvalidOperationException("Nincs ilyen itemid");
             }
-            else
+
+            using var trx = _context.Database.BeginTransaction();
+            try
             {
-                using var trx = _context.Database.BeginTransaction();
-                {
-                    _context.Remove(_context.Items.Where(x => x.ItemId == id).First());
-                    _context.SaveChanges();
-                    trx.Commit();
-                }
+                var item = _context.Items.First(x => x.ItemId == id);
+                _context.Items.Remove(item);
+                _context.SaveChanges();
+                trx.Commit();
+            }
+            catch
+            {
+                trx.Rollback();
+                throw;
             }
         }
         #endregion
-
     }
 }

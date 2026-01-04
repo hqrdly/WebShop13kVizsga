@@ -12,6 +12,7 @@ builder.Services.AddTransient<ItemModel>();
 builder.Services.AddTransient<OrderModel>();
 builder.Services.AddTransient<UserModel>();
 builder.Services.AddTransient<WorkerModel>();
+builder.Services.AddTransient<CartModel>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
