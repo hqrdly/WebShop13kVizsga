@@ -96,6 +96,7 @@ namespace WebShop13kVizsga.Persistence
         public int Quantity { get; set; }
 
         public int Price { get; set; }
+        public int TotalPrice { get; set; }
     }
 
     public class Order

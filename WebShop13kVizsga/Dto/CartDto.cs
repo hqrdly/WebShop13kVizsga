@@ -11,6 +11,7 @@
         public int quantity { get; set; }
 
         public int price { get; set; }
+        public int totalPrice { get; set; }
 
     }
 }

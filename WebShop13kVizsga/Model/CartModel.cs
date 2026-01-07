@@ -12,5 +12,24 @@ namespace WebShop13kVizsga.Model
             _context = context;
         }
 
+
+        #region CartInventory
+        #endregion
+
+
+        #region CartTotalPrice
+        #endregion
+
+        #region ModifyCart, (ModifyCartTotalPrice)
+        #endregion
+
+        #region ModifyCartStatus
+        #endregion
+
+        #region ModifyItemQuantity
+        #endregion
+
+        #region 
+        #endregion
     }
 }
